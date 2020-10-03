@@ -19,36 +19,55 @@ function showSuccess(input){
 }
 
 //Check Valid Email
-function isValidEmail(email){
+function checkEmail(input){
     const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-    return re.test(String(email).toLowerCase());
+    if(re.test(input.value.trim())){
+        showSuccess(input);
+    } else {
+        showError(input, 'Email is not Valid');
+    }
+    
+}
+
+//Check required fields
+function checkRequired(inputArr){
+    inputArr.forEach(function(input){
+      if(input.value.trim() == ''){
+          showError(input, `${getFieldName(input)} is required`);
+      } else {
+          showSuccess(input);
+      }
+    });
+}
+
+//Check passwords match
+function checkPasswordsMatch(input1, input2){
+    if(input1.value !== input2.value){
+        showError(input2, 'Passwords do not match');
+    }
+}
+
+//Get Field Name
+function getFieldName(input){
+    return input.id.charAt(0).toUpperCase() + input.id.slice(1);
+}
+
+//Check input length
+function checkLength(input, min, max){
+    if(input.value.length < min){
+        showError(input, `${getFieldName(input)} must be at least ${min} characters`);
+    } else if(input.value.length > max){
+        showError(input, `${getFieldName(input)} must not be more than ${max} characters`);
+    } else {
+        showSuccess(input); 
+    }
 }
 
 form.addEventListener('submit', function(event){
     event.preventDefault();
-    if(username.value === ''){
-        showError(username, 'Username is required');
-    } else  {
-        showSuccess(username);
-    }
-
-    if(email.value === ''){
-        showError(email, 'Email is required');
-    } else if(!isValidEmail(email.value)){
-        showError(email, 'Email is invalid');
-    } else {
-        showSuccess(email)
-    }
-
-    if(password.value === ''){
-        showError(password, 'Password is required');
-    } else {
-        showSuccess(password);
-    }
-
-    if(cpassword.value === ''){
-        showError(cpassword, 'Confirm your Password');
-    } else {
-        showSuccess(cpassword);
-    }
+   checkRequired([username, email, password, cpassword]);
+   checkLength(username, 3, 30);
+   checkLength(password, 6, 25);
+   checkEmail(email);
+   checkPasswordsMatch(password, cpassword);
 });
